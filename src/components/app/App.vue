@@ -18,6 +18,20 @@
                 @onTogggle="onTogggleHandler" 
                 @onRemove="onRemoveHandler"
               />
+              <Box class="d-flex justify-content-center">
+                <nav aria-label="pagination">
+                    <ul class="pagination pagination-sm">
+                        <li v-for='pageNumber in totalPages' 
+                        class="cursor-pointer"
+                        :key="pageNumber" 
+                        :class="{'active':pageNumber == page}"
+                        @click="changePageHandler(pageNumber)"
+                        >
+                            <span class="page-link">{{pageNumber}}</span>
+                        </li>
+                    </ul>
+                </nav>
+              </Box>
               <MovieAddForm @createMovie="createMovie"/>
               <!-- v-if="filter == 'all'"  -->
           </div>
@@ -42,15 +56,23 @@ import axios from 'axios'
     data() {
         return {
             movies:[],
-        term: '',
-        filter:'all',
-        isLoading:false,
+            term: '',
+            filter:'all',
+            isLoading:false,
+            limit : 10,
+            page : 1, 
+            totalPages: 0,
         }
     },
     methods: {
-        createMovie(item){
-            this.movies.push(item)
-            console.log(item);
+        async createMovie(item){
+            try {
+                const response = await axios.post('https://jsonplaceholder.typicode.com/posts',item)
+                this.movies.push(response.data)
+            } catch (error) {
+                alert(error.message)
+            }
+            
         },
 
         onTogggleHandler({id, prop}){
@@ -63,8 +85,15 @@ import axios from 'axios'
             })
         },
 
-        onRemoveHandler(id){
-            this.movies = this.movies.filter(c => c.id != id)
+        async onRemoveHandler(id){
+            try {
+                const response = await axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`)
+                this.movies = this.movies.filter(c => c.id != id)
+
+            } catch (error) {
+                alert(error.message)
+            }
+            
         },
 
         onSearchHandler(arr,term){
@@ -98,29 +127,40 @@ import axios from 'axios'
             try {
                 this.isLoading = true
 
-                    const {data} = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=3')
-                    const newArr = data.map(item => ({
+                    const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+                        params : {
+                            _limit : this.limit,
+                            _page : this.page, 
+                        }
+                    })
+                    const newArr = response.data.map(item => ({
                     id : item.id,
                     name: item.title,
                     like: false,
                     favourite: false,
                     viewers: item.id *10,  
                 }))
+                this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
                 this.movies = newArr
-                
-
-                
             } catch (error) {
                 alert(error.message)
             }finally{
                 this.isLoading = false
             }
         },
+        changePageHandler(page){
+            this.page = page
+        },
 
     },
+    watch:{
+        page(){
+            this.fetchMovie()
+        }
+    },
+
     mounted() {
         this.fetchMovie()
-        console.log("Ishladiku")
     },
  
 
