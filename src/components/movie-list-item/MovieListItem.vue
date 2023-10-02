@@ -1,6 +1,7 @@
 <template>
     <li class="list-group-item d-flex justify-content-between" 
     :class='[{like: movie.like}, {favourite: movie.favourite}]'>
+        <img src="./movie-img.jpg" class="img-fluid li-img" alt="">
         <span @click='$emit("onTogggle", {id: movie.id, prop:"like"})' 
         class="list-group-item-label">{{movie.name}}</span>
         <input type="number" class="list-group-item-input" :value="movie.viewers">
@@ -44,8 +45,13 @@ export default {
         border-bottom: 1px solid #3d5a80;
     }
 
+    .list-group-item-label {
+        padding-left: 5px;
+    }
+
     .list-group-item:last-child{
         border-bottom: none;
+        
     }
 
     .list-group-item span{
@@ -102,4 +108,10 @@ export default {
         color: #e09f3e;
     }
 
+    .li-img {
+        width: 5%;
+        height: 7%;
+        margin-top: 2%;
+        border-radius: 5%;
+    }
 </style>

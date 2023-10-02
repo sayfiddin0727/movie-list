@@ -176,7 +176,7 @@ import axios from 'axios'
 .content{
     width: 1000px;
     min-height: 700px;
-    background-color: #fff;
+    /* background-color: #fff; */
     margin: 0 auto;
     padding: 5rem 0;
 }
@@ -187,9 +187,5 @@ import axios from 'axios'
     background-color: #fcfaf5;
     border-radius: 4px;
     box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.15);
-}
-
-.none {
-    display: none;
 }
 </style>
